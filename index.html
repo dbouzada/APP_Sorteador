@@ -11,7 +11,7 @@
 
   /* NAV */
   nav{background:#fff;border-bottom:0.5px solid #e0d9f5;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
-  .nav-logo img{height:36px;width:auto;display:block}
+  .nav-logo img{height:52px;width:auto;display:block}
   .nav-links{display:flex;gap:1.5rem}
   .nav-links a{text-decoration:none;font-size:14px;color:#666;padding-bottom:2px;border-bottom:2px solid transparent;transition:.2s}
   .nav-links a.active{color:#4B0082;border-bottom-color:#4B0082;font-weight:500}
@@ -97,7 +97,7 @@
   .reveal-overlay{position:fixed;inset:0;background:radial-gradient(ellipse at center,#2d0060 0%,#1a0040 40%,#0a0020 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000}
   .stars-canvas{position:absolute;inset:0;pointer-events:none}
   .reveal-logo-big{margin-bottom:1.5rem;text-align:center}
-  .reveal-logo-big img{height:80px;width:auto;filter:drop-shadow(0 0 20px rgba(255,255,255,0.3));opacity:1}
+  .reveal-logo-big img{height:44px;width:auto;filter:drop-shadow(0 0 12px rgba(255,255,255,0.2));opacity:0.9}
   .reveal-subtitle{font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:.15em;text-transform:uppercase;margin-bottom:2.5rem}
   .reveal-avatars{display:flex;gap:2rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap}
   .reveal-avatar{width:100px;height:100px;border-radius:50%;background:rgba(123,47,190,0.3);border:3px solid #7B2FBE;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 0 30px rgba(123,47,190,0.6),0 0 60px rgba(123,47,190,0.2);animation:pulseGlow 2s ease-in-out infinite alternate}
@@ -132,6 +132,7 @@
     .footer-inner{grid-template-columns:1fr}
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -250,7 +251,8 @@
   <div class="reveal-avatars" id="winnerAvatars"></div>
   <div class="reveal-title" id="modalTitle">🎉 ¡Tenemos un ganador!</div>
   <div class="reveal-btns">
-    <button class="btn-export" onclick="exportWinners()"><i class="ti ti-download"></i> Exportar CSV</button>
+    <button class="btn-export" onclick="exportWinners()"><i class="ti ti-file-spreadsheet"></i> CSV</button>
+    <button class="btn-export" onclick="exportImage()"><i class="ti ti-photo-down"></i> Imagen</button>
     <button class="btn-close" onclick="closeReveal()"><i class="ti ti-x"></i> Cerrar</button>
   </div>
 </div>
@@ -474,6 +476,26 @@ function downloadTemplate(){
 document.getElementById('winnerModal').addEventListener('click', function(e){
   if(e.target === this) closeReveal();
 });
+
+function exportImage(){
+  const modal = document.getElementById('winnerModal');
+  // Temporarily hide buttons
+  const btns = modal.querySelector('.reveal-btns');
+  btns.style.display = 'none';
+  html2canvas(modal, {
+    backgroundColor: null,
+    scale: 2,
+    useCORS: true,
+    allowTaint: true
+  }).then(canvas => {
+    btns.style.display = '';
+    const a = document.createElement('a');
+    const sorteoName = document.getElementById('sorteoName').value || 'sorteo';
+    a.download = `ganador_${sorteoName.replace(/\s+/g,'-')}_${new Date().toISOString().slice(0,10)}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  }).catch(()=>{ btns.style.display=''; });
+}
 </script>
 </body>
 </html>
